@@ -1,0 +1,37 @@
+name: Lint
+
+on:
+  pull_request:
+  workflow_dispatch:
+  push:
+    branches:
+      - main
+
+jobs:
+  eslint:
+    name: ESLint
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'yarn'
+      - run: yarn install
+      - run: yarn lint
+
+  prettier:
+    name: Prettier
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
+        with:
+          node-version: latest
+          cache: 'yarn'
+      - run: yarn install
+      - name: Run yarn prettier
+        run: |
+          if ! yarn prettier; then
+            echo "::error ::Style issues found, run 'yarn prettier:fix'" && exit 1
+          fi
